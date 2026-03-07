@@ -53,7 +53,7 @@ z-index:1000;
 
 #viewer img{
 max-width:90%;
-max-height:80%;
+max-height:70%;
 border-radius:10px;
 margin-bottom:10px;
 }
@@ -83,6 +83,15 @@ background:#555;
 /* кнопка лайка */
 #likeBtn{
 background:#e74c3c;
+margin-bottom:10px;
+}
+
+/* описание */
+#description{
+background:rgba(0,0,0,0.6);
+padding:10px 20px;
+border-radius:10px;
+max-width:80%;
 margin-bottom:20px;
 }
 
@@ -94,13 +103,13 @@ margin-bottom:20px;
 <h1>📸 Minecraft Screenshots</h1>
 
 <div class="gallery">
-<img src="2026-01-24_16.13.01.png">
-<img src="2026-01-16_16.01.02.png">
-<img src="3.png">
-<img src="4.png">
-<img src="5.png">
-<img src="6.png">
-<img src="7.png">
+<img src="2026-01-24_16.13.01.png" data-desc="Моя первая база в мире Minecraft!">
+<img src="2026-01-16_16.01.02.png" data-desc="Скрин с видом на деревню">
+<img src="3.png" data-desc="Пещера с алмазами">
+<img src="4.png" data-desc="Мой замок на горе">
+<img src="5.png" data-desc="Красивый закат">
+<img src="6.png" data-desc="Лесной биом">
+<img src="7.png" data-desc="Мост через реку">
 </div>
 
 <!-- окно для увеличенного изображения -->
@@ -110,6 +119,7 @@ margin-bottom:20px;
 <button id="prevBtn">⬅ Предыдущий</button>
 <button id="nextBtn">Следующий ➡</button>
 </div>
+<div id="description"></div>
 <button id="likeBtn">❤️ <span id="likeCount">0</span></button>
 </div>
 
@@ -121,9 +131,12 @@ const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const likeBtn = document.getElementById("likeBtn");
 const likeCountSpan = document.getElementById("likeCount");
+const descriptionDiv = document.getElementById("description");
 
 let currentIndex = 0;
-let likes = 0;
+
+// Инициализируем лайки из localStorage
+let likes = JSON.parse(localStorage.getItem("likes")) || Array(images.length).fill(0);
 
 // открыть картинку при клике на галерею
 images.forEach((img, index) => {
@@ -137,7 +150,8 @@ viewer.style.display = "flex";
 // показать текущую картинку
 function showImage(){
 bigImg.src = images[currentIndex].src;
-likeCountSpan.textContent = likes;
+descriptionDiv.textContent = images[currentIndex].dataset.desc || "";
+likeCountSpan.textContent = likes[currentIndex];
 }
 
 // закрыть при клике на фон
@@ -163,8 +177,9 @@ showImage();
 // лайк
 likeBtn.onclick = (e) => {
 e.stopPropagation();
-likes++;
-likeCountSpan.textContent = likes;
+likes[currentIndex]++;
+likeCountSpan.textContent = likes[currentIndex];
+localStorage.setItem("likes", JSON.stringify(likes));
 }
 
 </script>
