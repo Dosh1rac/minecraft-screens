@@ -2,125 +2,133 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Minecraft Screens</title>
+<title>Server Screenshot</title>
 
 <style>
-
 body{
-background:#0f172a;
-color:white;
-font-family:Arial;
-text-align:center;
-margin:0;
+  background: linear-gradient(135deg, #1a3c12, #3e7e1a, #1a3c12);
+  color:white;
+  font-family:Arial;
+  text-align:center;
+  margin:0;
 }
 
 h1{
-padding:30px;
+  padding:30px;
 }
 
 .gallery{
-display:grid;
-grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
-gap:20px;
-padding:40px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
+  gap:20px;
+  padding:40px;
 }
 
 .gallery img{
-width:100%;
-border-radius:12px;
-transition:0.3s;
-cursor:pointer;
+  width:100%;
+  border-radius:12px;
+  transition: transform 0.3s;
+  cursor:pointer;
 }
 
 .gallery img:hover{
-transform:scale(1.05);
+  transform:scale(1.05);
 }
 
 /* окно просмотра */
 #viewer{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.9);
-display:none;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:1000;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.9);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:1000;
+  opacity:0;
+  pointer-events:none;
+  transition: opacity 0.4s;
+}
+
+#viewer.show{
+  opacity:1;
+  pointer-events:auto;
 }
 
 #viewer img{
-max-width:90%;
-max-height:70%;
-border-radius:10px;
-margin-bottom:10px;
+  max-width:90%;
+  max-height:70%;
+  border-radius:10px;
+  margin-bottom:10px;
+  opacity:0;
+  transition: opacity 0.3s;
 }
 
 /* кнопки переключения */
 .nav-buttons{
-display:flex;
-justify-content:space-between;
-width:50%;
-margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  width:50%;
+  margin-bottom:10px;
 }
 
 .nav-buttons button{
-background:#333;
-color:white;
-border:none;
-padding:10px 20px;
-border-radius:8px;
-cursor:pointer;
-transition:0.3s;
+  background:#333;
+  color:white;
+  border:none;
+  padding:10px 20px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.3s;
 }
 
 .nav-buttons button:hover{
-background:#555;
+  background:#555;
 }
 
 /* кнопка лайка */
 #likeBtn{
-background:#e74c3c;
-margin-bottom:10px;
+  background:#e74c3c;
+  margin-bottom:10px;
 }
 
 /* описание */
 #description{
-background:rgba(0,0,0,0.6);
-padding:10px 20px;
-border-radius:10px;
-max-width:80%;
-margin-bottom:20px;
+  background:rgba(0,0,0,0.6);
+  padding:10px 20px;
+  border-radius:10px;
+  max-width:80%;
+  margin-bottom:20px;
 }
-
 </style>
 </head>
 
 <body>
 
-<h1>📸 Minecraft Screenshots</h1>
+<h1>📸 Скрины с моего сервака</h1>
 
 <div class="gallery">
-<img src="2026-01-24_16.13.01.png" data-desc="Закат красивый">
-<img src="2026-01-16_16.01.02.png" data-desc="Нууу...">
-<img src="3.png" data-desc="Красиво просто">
-<img src="4.png" data-desc="Ракушка красивая">
-<img src="5.png" data-desc="Кораблик">
-<img src="6.png" data-desc="На ишаках гуляем">
-<img src="7.png" data-desc="Житель на доме стоит">
+  <img src="2026-01-24_16.13.01.png" data-desc="Закат красивый">
+  <img src="2026-01-16_16.01.02.png" data-desc="Нууу...">
+  <img src="3.png" data-desc="Красиво просто">
+  <img src="4.png" data-desc="Ракушка красивая">
+  <img src="5.png" data-desc="Кораблик">
+  <img src="6.png" data-desc="На ишаках гуляем">
+  <img src="7.png" data-desc="Житель на доме стоит">
 </div>
 
 <!-- окно для увеличенного изображения -->
 <div id="viewer">
-<img id="bigImg">
-<div class="nav-buttons">
-<button id="prevBtn">⬅ Предыдущий</button>
-<button id="nextBtn">Следующий ➡</button>
-</div>
-<div id="description"></div>
-<button id="likeBtn">❤️ <span id="likeCount">0</span></button>
+  <img id="bigImg">
+  <div class="nav-buttons">
+    <button id="prevBtn">⬅ Предыдущий</button>
+    <button id="nextBtn">Следующий ➡</button>
+  </div>
+  <div id="description"></div>
+  <button id="likeBtn">❤️ <span id="likeCount">0</span></button>
 </div>
 
 <script>
@@ -135,53 +143,61 @@ const descriptionDiv = document.getElementById("description");
 
 let currentIndex = 0;
 
-// Инициализируем лайки из localStorage
-let likes = JSON.parse(localStorage.getItem("likes")) || Array(images.length).fill(0);
+// Инициализируем лайки из localStorage с синхронизацией длины
+let storedLikes = JSON.parse(localStorage.getItem("likes")) || [];
+let likes = Array(images.length).fill(0);
+for(let i = 0; i < storedLikes.length && i < likes.length; i++){
+    likes[i] = storedLikes[i];
+}
 
 // открыть картинку при клике на галерею
 images.forEach((img, index) => {
-img.onclick = () => {
-currentIndex = index;
-showImage();
-viewer.style.display = "flex";
-}
+  img.onclick = () => {
+    currentIndex = index;
+    showImage();
+    viewer.classList.add("show"); // плавное появление
+  }
 });
 
 // показать текущую картинку
 function showImage(){
-bigImg.src = images[currentIndex].src;
-descriptionDiv.textContent = images[currentIndex].dataset.desc || "";
-likeCountSpan.textContent = likes[currentIndex];
+  // плавная смена изображения
+  bigImg.style.opacity = 0;
+  setTimeout(() => {
+    bigImg.src = images[currentIndex].src;
+    descriptionDiv.textContent = images[currentIndex].dataset.desc || "";
+    likeCountSpan.textContent = likes[currentIndex];
+    bigImg.style.opacity = 1;
+  }, 150);
 }
 
 // закрыть при клике на фон
 viewer.onclick = (e) => {
-if(e.target === viewer){
-viewer.style.display = "none";
-}
+  if(e.target === viewer){
+    viewer.classList.remove("show"); // плавное исчезновение
+  }
 }
 
 // переключение
 prevBtn.onclick = (e) => {
-e.stopPropagation();
-currentIndex = (currentIndex - 1 + images.length) % images.length;
-showImage();
+  e.stopPropagation();
+  currentIndex = (currentIndex - 1 + images.length) % images.length;
+  showImage();
 }
 
 nextBtn.onclick = (e) => {
-e.stopPropagation();
-currentIndex = (currentIndex + 1) % images.length;
-showImage();
+  e.stopPropagation();
+  currentIndex = (currentIndex + 1) % images.length;
+  showImage();
 }
 
 // лайк
 likeBtn.onclick = (e) => {
-e.stopPropagation();
-likes[currentIndex]++;
-likeCountSpan.textContent = likes[currentIndex];
-localStorage.setItem("likes", JSON.stringify(likes));
+  e.stopPropagation();
+  likes[currentIndex]++;
+  likeCountSpan.textContent = likes[currentIndex];
+  localStorage.setItem("likes", JSON.stringify(likes));
 }
-
 </script>
 
 </body>
