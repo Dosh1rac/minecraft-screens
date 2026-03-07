@@ -37,7 +37,6 @@ transform:scale(1.05);
 }
 
 /* окно просмотра */
-
 #viewer{
 position:fixed;
 top:0;
@@ -48,13 +47,43 @@ background:rgba(0,0,0,0.9);
 display:none;
 justify-content:center;
 align-items:center;
+flex-direction:column;
 z-index:1000;
 }
 
 #viewer img{
 max-width:90%;
-max-height:90%;
+max-height:80%;
 border-radius:10px;
+margin-bottom:10px;
+}
+
+/* кнопки переключения */
+.nav-buttons{
+display:flex;
+justify-content:space-between;
+width:50%;
+margin-bottom:10px;
+}
+
+.nav-buttons button{
+background:#333;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.nav-buttons button:hover{
+background:#555;
+}
+
+/* кнопка лайка */
+#likeBtn{
+background:#e74c3c;
+margin-bottom:20px;
 }
 
 </style>
@@ -65,7 +94,6 @@ border-radius:10px;
 <h1>📸 Minecraft Screenshots</h1>
 
 <div class="gallery">
-
 <img src="2026-01-24_16.13.01.png">
 <img src="2026-01-16_16.01.02.png">
 <img src="3.png">
@@ -73,30 +101,70 @@ border-radius:10px;
 <img src="5.png">
 <img src="6.png">
 <img src="7.png">
-
 </div>
 
 <!-- окно для увеличенного изображения -->
-
 <div id="viewer">
 <img id="bigImg">
+<div class="nav-buttons">
+<button id="prevBtn">⬅ Предыдущий</button>
+<button id="nextBtn">Следующий ➡</button>
+</div>
+<button id="likeBtn">❤️ <span id="likeCount">0</span></button>
 </div>
 
 <script>
-
-const images = document.querySelectorAll(".gallery img");
+const images = Array.from(document.querySelectorAll(".gallery img"));
 const viewer = document.getElementById("viewer");
 const bigImg = document.getElementById("bigImg");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const likeBtn = document.getElementById("likeBtn");
+const likeCountSpan = document.getElementById("likeCount");
 
-images.forEach(img => {
+let currentIndex = 0;
+let likes = 0;
+
+// открыть картинку при клике на галерею
+images.forEach((img, index) => {
 img.onclick = () => {
+currentIndex = index;
+showImage();
 viewer.style.display = "flex";
-bigImg.src = img.src;
 }
 });
 
-viewer.onclick = () => {
+// показать текущую картинку
+function showImage(){
+bigImg.src = images[currentIndex].src;
+likeCountSpan.textContent = likes;
+}
+
+// закрыть при клике на фон
+viewer.onclick = (e) => {
+if(e.target === viewer){
 viewer.style.display = "none";
+}
+}
+
+// переключение
+prevBtn.onclick = (e) => {
+e.stopPropagation();
+currentIndex = (currentIndex - 1 + images.length) % images.length;
+showImage();
+}
+
+nextBtn.onclick = (e) => {
+e.stopPropagation();
+currentIndex = (currentIndex + 1) % images.length;
+showImage();
+}
+
+// лайк
+likeBtn.onclick = (e) => {
+e.stopPropagation();
+likes++;
+likeCountSpan.textContent = likes;
 }
 
 </script>
