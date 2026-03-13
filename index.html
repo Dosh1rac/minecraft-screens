@@ -3,220 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Screenshot</title>
-
+    <title>Server Memories</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --bg: #020617;
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * { box-sizing: border-box; cursor: none; }
+
         body {
-            background: #0f172a;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             margin: 0;
             overflow-x: hidden;
         }
 
-        h1 { padding: 40px 20px; margin: 0; font-size: 2.5rem; }
-
-        .section-title {
-            font-size: 0.9rem;
-            color: #64748b;
-            margin-top: 10px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
+        /* Кастомный курсор */
+        #cursor {
+            width: 20px; height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease;
         }
 
-        /* Список участников */
-        .players-section {
+        header {
+            height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin: 0;
+            background: linear-gradient(to bottom, #fff, #64748b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+        }
+
+        .section-label {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .players-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             padding: 20px;
-            max-width: 800px;
-            margin: 0 auto 30px auto;
+            max-width: 900px;
         }
 
-        .player-tag {
-            background: #1e293b;
-            padding: 6px 15px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            font-size: 0.9rem;
-            color: #38bdf8;
-            cursor: default;
-            transition: 0.2s;
-        }
-
-        .player-tag:hover {
-            border-color: #38bdf8;
-            background: #1e293b;
+        .player-chip {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            transition: 0.3s;
         }
 
         /* Галерея */
         .gallery {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            padding: 20px 40px 60px 40px;
+            gap: 30px;
+            padding: 40px;
         }
 
-        .gallery img {
+        .photo-card {
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .photo-card.visible { opacity: 1; transform: translateY(0); }
+
+        .photo-card:hover {
+            transform: scale(1.02) translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .photo-card img {
             width: 100%;
             aspect-ratio: 16/9;
             object-fit: cover;
-            border-radius: 15px;
-            cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: block;
         }
 
-        .gallery img:hover {
-            transform: scale(1.03);
-        }
-
-        /* Окно просмотра (Viewer) */
+        /* Viewer */
         #viewer {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.98);
+            backdrop-filter: blur(20px);
+            display: none;
+            place-items: center;
+            z-index: 10000;
         }
 
-        #viewer.show { opacity: 1; pointer-events: auto; }
+        #viewer.active { display: grid; }
 
-        #viewer img {
-            max-width: 90%;
-            max-height: 75%;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-        }
+        .viewer-content { width: 90%; max-width: 1100px; text-align: center; }
+        .viewer-content img { width: 100%; border-radius: 15px; margin-bottom: 20px; }
 
-        .nav-buttons { display: flex; gap: 15px; margin-bottom: 15px; }
-
+        .controls { display: flex; justify-content: center; gap: 20px; }
         .btn {
-            background: #334155;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
+            background: white; border: none; padding: 12px 25px;
+            border-radius: 10px; font-weight: 700; transition: 0.2s;
         }
-
-        .btn:hover { background: #475569; transform: translateY(-2px); }
-        
-        #likeBtn { background: #ef4444; display: flex; align-items: center; gap: 8px; }
-        #likeBtn:hover { background: #dc2626; }
-
-        #description {
-            font-size: 1.1rem;
-            color: #cbd5e1;
-            padding: 10px 20px;
-            max-width: 80%;
-        }
+        .btn-like { background: #ef4444; color: white; }
     </style>
 </head>
 <body>
 
-    <h1>📸 Скрины с сервака</h1>
+    <div id="cursor"></div>
 
-    <div class="section-title">Наши игроки</div>
-    <div class="players-section">
-        <div class="player-tag">Dosh1rac</div>
-        <div class="player-tag">Meizil</div>
-        <div class="player-tag">hirrrrrrrrrrrrrr</div>
-        <div class="player-tag">_LumiNebula_</div>
-        <div class="player-tag">_Nidalap_</div>
-        <div class="player-tag">Vivaotslova</div>
-    </div>
+    <header>
+        <div class="section-label">Vanilla Server 2026</div>
+        <h1>Memory Lane.</h1>
+        <div class="players-container">
+            <div class="player-chip">Dosh1rac</div>
+            <div class="player-chip">Meizil</div>
+            <div class="player-chip">hirrrrrrrrrrrrrr</div>
+            <div class="player-chip">_LumiNebula_</div>
+            <div class="player-chip">_Nidalap_</div>
+            <div class="player-chip">Vivaotslova</div>
+        </div>
+    </header>
 
-    <div class="gallery">
-        <img src="2026-01-24_16.13.01.png" data-desc="Закат красивый">
-        <img src="2026-01-16_16.01.02.png" data-desc="Нууу...">
-        <img src="3.png" data-desc="Красиво просто">
-        <img src="4.png" data-desc="Ракушка красивая">
-        <img src="5.png" data-desc="Кораблик">
-        <img src="6.png" data-desc="На ишаках гуляем">
-        <img src="7.png" data-desc="Житель на доме стоит">
-        <img src="8.png" data-desc="Амбарчик">
-        <img src="9.png" data-desc="Соседи">
-        <img src="10.png" data-desc="Повесился🤣">
-        <img src="11.png" data-desc="Торчун">
-        <img src="12.png" data-desc="Барыга">
-    </div>
+    <main class="gallery">
+        <div class="photo-card" data-img="2026-01-24_16.13.01.png" data-desc="Закат красивый">
+            <img src="2026-01-24_16.13.01.png">
+        </div>
+        <div class="photo-card" data-img="2026-01-16_16.01.02.png" data-desc="Нууу...">
+            <img src="2026-01-16_16.01.02.png">
+        </div>
+        <div class="photo-card" data-img="3.png" data-desc="Красиво просто">
+            <img src="3.png">
+        </div>
+        <div class="photo-card" data-img="4.png" data-desc="Ракушка красивая">
+            <img src="4.png">
+        </div>
+        <div class="photo-card" data-img="5.png" data-desc="Кораблик">
+            <img src="5.png">
+        </div>
+        <div class="photo-card" data-img="6.png" data-desc="На ишаках гуляем">
+            <img src="6.png">
+        </div>
+        <div class="photo-card" data-img="7.png" data-desc="Житель на доме стоит">
+            <img src="7.png">
+        </div>
+        <div class="photo-card" data-img="8.png" data-desc="Амбарчик">
+            <img src="8.png">
+        </div>
+        <div class="photo-card" data-img="9.png" data-desc="Соседи">
+            <img src="9.png">
+        </div>
+        <div class="photo-card" data-img="10.png" data-desc="Повесился🤣">
+            <img src="10.png">
+        </div>
+        <div class="photo-card" data-img="11.png" data-desc="Торчун">
+            <img src="11.png">
+        </div>
+        <div class="photo-card" data-img="12.png" data-desc="Барыга">
+            <img src="12.png">
+        </div>
+    </main>
 
     <div id="viewer">
-        <img id="bigImg">
-        <div id="description"></div>
-        <div class="nav-buttons">
-            <button class="btn" id="prevBtn">⬅</button>
-            <button class="btn" id="likeBtn">❤️ <span id="likeCount">0</span></button>
-            <button class="btn" id="nextBtn">➡</button>
+        <div class="viewer-content">
+            <img id="viewerImg" src="">
+            <h2 id="viewerDesc"></h2>
+            <div class="controls">
+                <button class="btn" id="prevBtn">Назад</button>
+                <button class="btn btn-like" id="likeBtn">❤️ <span id="likeCount">0</span></button>
+                <button class="btn" id="nextBtn">Далее</button>
+            </div>
         </div>
-        <p style="color: #64748b; font-size: 0.8rem;">Кликни по фону, чтобы закрыть</p>
     </div>
 
     <script>
-        const images = Array.from(document.querySelectorAll(".gallery img"));
-        const viewer = document.getElementById("viewer");
-        const bigImg = document.getElementById("bigImg");
-        const prevBtn = document.getElementById("prevBtn");
-        const nextBtn = document.getElementById("nextBtn");
-        const likeBtn = document.getElementById("likeBtn");
-        const likeCountSpan = document.getElementById("likeCount");
-        const descriptionDiv = document.getElementById("description");
-
-        let currentIndex = 0;
-        let storedLikes = JSON.parse(localStorage.getItem("server_likes")) || [];
-        let likes = Array(images.length).fill(0);
-        for(let i = 0; i < storedLikes.length && i < likes.length; i++) likes[i] = storedLikes[i];
-
-        images.forEach((img, index) => {
-            img.onclick = () => {
-                currentIndex = index;
-                showImage();
-                viewer.classList.add("show");
-            }
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
         });
 
-        function showImage(){
-            bigImg.src = images[currentIndex].src;
-            descriptionDiv.textContent = images[currentIndex].dataset.desc || "";
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.photo-card').forEach(card => observer.observe(card));
+
+        const cards = document.querySelectorAll('.photo-card');
+        const viewer = document.getElementById('viewer');
+        const viewerImg = document.getElementById('viewerImg');
+        const viewerDesc = document.getElementById("viewerDesc");
+        const likeCountSpan = document.getElementById("likeCount");
+        
+        let currentIndex = 0;
+        let likes = JSON.parse(localStorage.getItem("pro_likes")) || Array(cards.length).fill(0);
+
+        cards.forEach((card, index) => {
+            card.onclick = () => {
+                currentIndex = index;
+                updateViewer();
+                viewer.classList.add('active');
+            };
+        });
+
+        function updateViewer() {
+            viewerImg.src = cards[currentIndex].dataset.img;
+            viewerDesc.textContent = cards[currentIndex].dataset.desc;
             likeCountSpan.textContent = likes[currentIndex];
         }
 
-        viewer.onclick = (e) => {
-            if(e.target === viewer) viewer.classList.remove("show");
-        }
-
-        prevBtn.onclick = (e) => {
+        document.getElementById('prevBtn').onclick = (e) => {
             e.stopPropagation();
-            currentIndex = (currentIndex - 1 + images.length) % images.length;
-            showImage();
-        }
+            currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            updateViewer();
+        };
 
-        nextBtn.onclick = (e) => {
+        document.getElementById('nextBtn').onclick = (e) => {
             e.stopPropagation();
-            currentIndex = (currentIndex + 1) % images.length;
-            showImage();
-        }
+            currentIndex = (currentIndex + 1) % cards.length;
+            updateViewer();
+        };
 
-        likeBtn.onclick = (e) => {
+        document.getElementById('likeBtn').onclick = (e) => {
             e.stopPropagation();
             likes[currentIndex]++;
-            likeCountSpan.textContent = likes[currentIndex];
-            localStorage.setItem("server_likes", JSON.stringify(likes));
-        }
+            updateViewer();
+            localStorage.setItem("pro_likes", JSON.stringify(likes));
+        };
+
+        viewer.onclick = () => viewer.classList.remove('active');
     </script>
 </body>
 </html>
