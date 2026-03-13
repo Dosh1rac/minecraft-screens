@@ -1,228 +1,222 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Server Screenshot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Screenshot</title>
 
-<style>
-  /* Базовые стили */
-  body {
-    background: #0f172a;
-    color: white;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-  }
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-  h1 { padding: 30px; margin: 0; }
+        h1 { padding: 40px 20px; margin: 0; font-size: 2.5rem; }
 
-  /* Стили списка игроков */
-  .section-title {
-    font-size: 1rem;
-    color: #94a3b8;
-    margin-top: 20px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
+        .section-title {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
 
-  .players-section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.03);
-  }
+        /* Список участников */
+        .players-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+        }
 
-  .player-card {
-    background: #1e293b;
-    padding: 8px 18px;
-    border-radius: 50px;
-    border: 1px solid #334155;
-    font-weight: bold;
-    font-size: 0.9em;
-    color: #38bdf8;
-    transition: 0.3s;
-  }
+        .player-tag {
+            background: #1e293b;
+            padding: 6px 15px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            font-size: 0.9rem;
+            color: #38bdf8;
+            cursor: default;
+            transition: 0.2s;
+        }
 
-  .player-card:hover {
-    background: #38bdf8;
-    color: #0f172a;
-    transform: translateY(-2px);
-  }
+        .player-tag:hover {
+            border-color: #38bdf8;
+            background: #1e293b;
+        }
 
-  /* Стили галереи */
-  .gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 40px;
-  }
+        /* Галерея */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 20px 40px 60px 40px;
+        }
 
-  .gallery img {
-    width: 100%;
-    aspect-ratio: 16/9; /* Чтобы все превью были одного размера */
-    object-fit: cover;
-    border-radius: 12px;
-    transition: transform 0.3s;
-    cursor: pointer;
-  }
+        .gallery img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-  .gallery img:hover { transform: scale(1.05); }
+        .gallery img:hover {
+            transform: scale(1.03);
+        }
 
-  /* Окно просмотра */
-  #viewer {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s;
-  }
+        /* Окно просмотра (Viewer) */
+        #viewer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
 
-  #viewer.show { opacity: 1; pointer-events: auto; }
+        #viewer.show { opacity: 1; pointer-events: auto; }
 
-  #viewer img {
-    max-width: 90%;
-    max-height: 75%;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
+        #viewer img {
+            max-width: 90%;
+            max-height: 75%;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
 
-  .nav-buttons {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-  }
+        .nav-buttons { display: flex; gap: 15px; margin-bottom: 15px; }
 
-  .nav-buttons button, #likeBtn {
-    background: #334155;
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
+        .btn {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
 
-  .nav-buttons button:hover { background: #475569; }
-  #likeBtn { background: #e74c3c; }
-  #likeBtn:hover { background: #ff5e4d; }
+        .btn:hover { background: #475569; transform: translateY(-2px); }
+        
+        #likeBtn { background: #ef4444; display: flex; align-items: center; gap: 8px; }
+        #likeBtn:hover { background: #dc2626; }
 
-  #description {
-    background: rgba(0,0,0,0.6);
-    padding: 10px 20px;
-    border-radius: 10px;
-    max-width: 80%;
-  }
-</style>
+        #description {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            padding: 10px 20px;
+            max-width: 80%;
+        }
+    </style>
 </head>
-
 <body>
 
-  <h1>📸 Скрины с моего сервака</h1>
+    <h1>📸 Скрины с сервака</h1>
 
-  <div class="section-title">Участники</div>
-  <div class="players-section">
-    <div class="player-card">Dosh1rac</div>
-    <div class="player-card">Meizil</div>
-    <div class="player-card">hirrrrrrrrrrrrrr</div>
-    <div class="player-card">_LumiNebula_</div>
-    <div class="player-card">_Nidalap_</div>
-    <div class="player-card">Vivaotslova</div>
-  </div>
-
-  <div class="gallery">
-    <img src="2026-01-24_16.13.01.png" data-desc="Закат красивый">
-    <img src="2026-01-16_16.01.02.png" data-desc="Нууу...">
-    <img src="3.png" data-desc="Красиво просто">
-    <img src="4.png" data-desc="Ракушка красивая">
-    <img src="5.png" data-desc="Кораблик">
-    <img src="6.png" data-desc="На ишаках гуляем">
-    <img src="7.png" data-desc="Житель на доме стоит">
-    <img src="8.png" data-desc="Амбарчик">
-    <img src="9.png" data-desc="Соседи">
-    <img src="10.png" data-desc="Повесился🤣">
-    <img src="11.png" data-desc="Торчун">
-    <img src="12.png" data-desc="Барыга">
-  </div>
-
-  <div id="viewer">
-    <img id="bigImg">
-    <div class="nav-buttons">
-      <button id="prevBtn">⬅ Назад</button>
-      <button id="nextBtn">Вперед ➡</button>
+    <div class="section-title">Наши игроки</div>
+    <div class="players-section">
+        <div class="player-tag">Dosh1rac</div>
+        <div class="player-tag">Meizil</div>
+        <div class="player-tag">hirrrrrrrrrrrrrr</div>
+        <div class="player-tag">_LumiNebula_</div>
+        <div class="player-tag">_Nidalap_</div>
+        <div class="player-tag">Vivaotslova</div>
     </div>
-    <div id="description"></div>
-    <br>
-    <button id="likeBtn">❤️ <span id="likeCount">0</span></button>
-  </div>
 
-  <script>
-    const images = Array.from(document.querySelectorAll(".gallery img"));
-    const viewer = document.getElementById("viewer");
-    const bigImg = document.getElementById("bigImg");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const likeBtn = document.getElementById("likeBtn");
-    const likeCountSpan = document.getElementById("likeCount");
-    const descriptionDiv = document.getElementById("description");
+    <div class="gallery">
+        <img src="2026-01-24_16.13.01.png" data-desc="Закат красивый">
+        <img src="2026-01-16_16.01.02.png" data-desc="Нууу...">
+        <img src="3.png" data-desc="Красиво просто">
+        <img src="4.png" data-desc="Ракушка красивая">
+        <img src="5.png" data-desc="Кораблик">
+        <img src="6.png" data-desc="На ишаках гуляем">
+        <img src="7.png" data-desc="Житель на доме стоит">
+        <img src="8.png" data-desc="Амбарчик">
+        <img src="9.png" data-desc="Соседи">
+        <img src="10.png" data-desc="Повесился🤣">
+        <img src="11.png" data-desc="Торчун">
+        <img src="12.png" data-desc="Барыга">
+    </div>
 
-    let currentIndex = 0;
-    let storedLikes = JSON.parse(localStorage.getItem("likes")) || [];
-    let likes = Array(images.length).fill(0);
-    for(let i = 0; i < storedLikes.length && i < likes.length; i++){
-        likes[i] = storedLikes[i];
-    }
+    <div id="viewer">
+        <img id="bigImg">
+        <div id="description"></div>
+        <div class="nav-buttons">
+            <button class="btn" id="prevBtn">⬅</button>
+            <button class="btn" id="likeBtn">❤️ <span id="likeCount">0</span></button>
+            <button class="btn" id="nextBtn">➡</button>
+        </div>
+        <p style="color: #64748b; font-size: 0.8rem;">Кликни по фону, чтобы закрыть</p>
+    </div>
 
-    images.forEach((img, index) => {
-      img.onclick = () => {
-        currentIndex = index;
-        showImage();
-        viewer.classList.add("show");
-      }
-    });
+    <script>
+        const images = Array.from(document.querySelectorAll(".gallery img"));
+        const viewer = document.getElementById("viewer");
+        const bigImg = document.getElementById("bigImg");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const likeBtn = document.getElementById("likeBtn");
+        const likeCountSpan = document.getElementById("likeCount");
+        const descriptionDiv = document.getElementById("description");
 
-    function showImage(){
-      bigImg.style.opacity = 0;
-      setTimeout(() => {
-        bigImg.src = images[currentIndex].src;
-        descriptionDiv.textContent = images[currentIndex].dataset.desc || "";
-        likeCountSpan.textContent = likes[currentIndex];
-        bigImg.style.opacity = 1;
-      }, 150);
-    }
+        let currentIndex = 0;
+        let storedLikes = JSON.parse(localStorage.getItem("server_likes")) || [];
+        let likes = Array(images.length).fill(0);
+        for(let i = 0; i < storedLikes.length && i < likes.length; i++) likes[i] = storedLikes[i];
 
-    viewer.onclick = (e) => {
-      if(e.target === viewer) viewer.classList.remove("show");
-    }
+        images.forEach((img, index) => {
+            img.onclick = () => {
+                currentIndex = index;
+                showImage();
+                viewer.classList.add("show");
+            }
+        });
 
-    prevBtn.onclick = (e) => {
-      e.stopPropagation();
-      currentIndex = (currentIndex - 1 + images.length) % images.length;
-      showImage();
-    }
+        function showImage(){
+            bigImg.src = images[currentIndex].src;
+            descriptionDiv.textContent = images[currentIndex].dataset.desc || "";
+            likeCountSpan.textContent = likes[currentIndex];
+        }
 
-    nextBtn.onclick = (e) => {
-      e.stopPropagation();
-      currentIndex = (currentIndex + 1) % images.length;
-      showImage();
-    }
+        viewer.onclick = (e) => {
+            if(e.target === viewer) viewer.classList.remove("show");
+        }
 
-    likeBtn.onclick = (e) => {
-      e.stopPropagation();
-      likes[currentIndex]++;
-      likeCountSpan.textContent = likes[currentIndex];
-      localStorage.setItem("likes", JSON.stringify(likes));
-    }
-  </script>
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            showImage();
+        }
+
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            currentIndex = (currentIndex + 1) % images.length;
+            showImage();
+        }
+
+        likeBtn.onclick = (e) => {
+            e.stopPropagation();
+            likes[currentIndex]++;
+            likeCountSpan.textContent = likes[currentIndex];
+            localStorage.setItem("server_likes", JSON.stringify(likes));
+        }
+    </script>
 </body>
 </html>
