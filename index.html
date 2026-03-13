@@ -1,244 +1,247 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Server Screenshot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Screenshot</title>
 
-<style>
-  body {
-    background: #0f172a;
-    color: white;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-  }
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+        }
 
-  h1 { padding: 30px; margin: 0; }
+        h1 { padding: 30px; margin: 0; }
 
-  .section-title {
-    font-size: 1rem;
-    color: #94a3b8;
-    margin-top: 20px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
+        .section-title {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
-  .players-section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.03);
-  }
+        /* Список игроков */
+        .players-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            margin-bottom: 20px;
+        }
 
-  .player-card {
-    background: #1e293b;
-    padding: 8px 18px;
-    border-radius: 50px;
-    border: 1px solid #334155;
-    font-weight: bold;
-    font-size: 0.9em;
-    color: #38bdf8;
-    transition: 0.3s;
-    cursor: pointer; /* Сделали курсор рукой */
-  }
+        .player-card {
+            background: #1e293b;
+            padding: 8px 18px;
+            border-radius: 50px;
+            border: 1px solid #334155;
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #38bdf8;
+            transition: 0.3s;
+            cursor: pointer;
+        }
 
-  .player-card:hover {
-    background: #38bdf8;
-    color: #0f172a;
-    transform: translateY(-2px);
-  }
+        .player-card:hover {
+            background: #38bdf8;
+            color: #0f172a;
+            transform: translateY(-2px);
+        }
 
-  /* Стили для окна со скином */
-  #skinViewer {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: none; /* Скрыто по умолчанию */
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-  }
+        /* Окно со скином */
+        #skinViewer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
 
-  .skin-card {
-    background: #1e293b;
-    padding: 30px;
-    border-radius: 20px;
-    border: 2px solid #38bdf8;
-    text-align: center;
-    box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
-  }
+        .skin-card {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #38bdf8;
+            text-align: center;
+        }
 
-  .skin-card img {
-    height: 300px;
-    image-rendering: pixelated; /* Чтобы скин был четким, а не мыльным */
-    margin-bottom: 15px;
-  }
+        .skin-card img {
+            height: 300px;
+            image-rendering: pixelated; /* Четкие пиксели */
+            margin-bottom: 15px;
+        }
 
-  /* Галлерея */
-  .gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 40px;
-  }
+        /* Галерея */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
 
-  .gallery img {
-    width: 100%;
-    aspect-ratio: 16/9;
-    object-fit: cover;
-    border-radius: 12px;
-    transition: transform 0.3s;
-    cursor: pointer;
-  }
+        .gallery img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 12px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
 
-  .gallery img:hover { transform: scale(1.05); }
+        .gallery img:hover { transform: scale(1.05); }
 
-  /* Окно просмотра скринов */
-  #viewer {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s;
-  }
+        /* Окно просмотра скринов */
+        #viewer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s;
+        }
 
-  #viewer.show { opacity: 1; pointer-events: auto; }
+        #viewer.show { opacity: 1; pointer-events: auto; }
 
-  #viewer img {
-    max-width: 90%;
-    max-height: 75%;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
+        #viewer img {
+            max-width: 90%;
+            max-height: 75%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-  .nav-buttons { display: flex; gap: 20px; margin-bottom: 15px; }
-  .nav-buttons button, #likeBtn {
-    background: #334155; color: white; border: none;
-    padding: 10px 25px; border-radius: 8px; cursor: pointer; transition: 0.3s;
-  }
-  .nav-buttons button:hover { background: #475569; }
-  #likeBtn { background: #e74c3c; }
-  #description { background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 10px; }
-</style>
+        .nav-buttons { display: flex; gap: 20px; margin-bottom: 15px; }
+        .nav-buttons button, #likeBtn {
+            background: #334155; color: white; border: none;
+            padding: 10px 25px; border-radius: 8px; cursor: pointer; transition: 0.3s;
+        }
+        #likeBtn { background: #e74c3c; }
+        #description { background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 10px; }
+    </style>
 </head>
-
 <body>
 
-  <h1>📸 Скрины с моего сервака</h1>
+    <h1>📸 Скрины с моего сервака</h1>
 
-  <div class="section-title">Участники (кликни на ник)</div>
-  <div class="players-section">
-    <div class="player-card">Dosh1rac</div>
-    <div class="player-card">Meizil</div>
-    <div class="player-card">hirrrrrrrrrrrrrr</div>
-    <div class="player-card">_LumiNebula_</div>
-    <div class="player-card">_Nidalap_</div>
-    <div class="player-card">Vivaotslova</div>
-  </div>
-
-  <div class="gallery">
-    <img src="2026-01-24_16.13.01.png" data-desc="Закат красивый">
-    <img src="2026-01-16_16.01.02.png" data-desc="Нууу...">
-    <img src="3.png" data-desc="Красиво просто">
-    <img src="4.png" data-desc="Ракушка красивая">
-    <img src="5.png" data-desc="Кораблик">
-    <img src="6.png" data-desc="На ишаках гуляем">
-    <img src="7.png" data-desc="Житель на доме стоит">
-    <img src="8.png" data-desc="Амбарчик">
-    <img src="9.png" data-desc="Соседи">
-    <img src="10.png" data-desc="Повесился🤣">
-    <img src="11.png" data-desc="Торчун">
-    <img src="12.png" data-desc="Барыга">
-  </div>
-
-  <div id="skinViewer">
-    <div class="skin-card">
-      <h2 id="skinName">Ник</h2>
-      <img id="skinImg" src="" alt="Skin">
-      <p style="color: #94a3b8;">Кликни в любое место, чтобы закрыть</p>
+    <div class="section-title">Участники (кликни на ник)</div>
+    <div class="players-section">
+        <div class="player-card">Dosh1rac</div>
+        <div class="player-card">Meizil</div>
+        <div class="player-card">hirrrrrrrrrrrrrr</div>
+        <div class="player-card">_LumiNebula_</div>
+        <div class="player-card">_Nidalap_</div>
+        <div class="player-card">Vivaotslova</div>
     </div>
-  </div>
 
-  <div id="viewer">
-    <img id="bigImg">
-    <div class="nav-buttons">
-      <button id="prevBtn">⬅ Назад</button>
-      <button id="nextBtn">Вперед ➡</button>
+    <hr style="border: 0; height: 1px; background: #334155; margin: 0 100px;">
+
+    <div class="gallery">
+        <img src="2026-01-24_16.13.01.png" data-desc="Закат красивый">
+        <img src="2026-01-16_16.01.02.png" data-desc="Нууу...">
+        <img src="3.png" data-desc="Красиво просто">
+        <img src="4.png" data-desc="Ракушка красивая">
+        <img src="5.png" data-desc="Кораблик">
+        <img src="6.png" data-desc="На ишаках гуляем">
+        <img src="7.png" data-desc="Житель на доме стоит">
+        <img src="8.png" data-desc="Амбарчик">
+        <img src="9.png" data-desc="Соседи">
+        <img src="10.png" data-desc="Повесился🤣">
+        <img src="11.png" data-desc="Торчун">
+        <img src="12.png" data-desc="Барыга">
     </div>
-    <div id="description"></div>
-    <br>
-    <button id="likeBtn">❤️ <span id="likeCount">0</span></button>
-  </div>
 
-  <script>
-    // Логика галереи
-    const images = Array.from(document.querySelectorAll(".gallery img"));
-    const viewer = document.getElementById("viewer");
-    const bigImg = document.getElementById("bigImg");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const likeBtn = document.getElementById("likeBtn");
-    const likeCountSpan = document.getElementById("likeCount");
-    const descriptionDiv = document.getElementById("description");
+    <div id="skinViewer">
+        <div class="skin-card">
+            <h2 id="skinName">Ник</h2>
+            <img id="skinImg" src="" alt="Skin">
+            <p style="color: #94a3b8; font-size: 0.8em;">Кликни, чтобы закрыть</p>
+        </div>
+    </div>
 
-    let currentIndex = 0;
-    let storedLikes = JSON.parse(localStorage.getItem("likes")) || [];
-    let likes = Array(images.length).fill(0);
-    for(let i = 0; i < storedLikes.length && i < likes.length; i++) likes[i] = storedLikes[i];
+    <div id="viewer">
+        <img id="bigImg">
+        <div class="nav-buttons">
+            <button id="prevBtn">⬅ Назад</button>
+            <button id="nextBtn">Вперед ➡</button>
+        </div>
+        <div id="description"></div>
+        <br>
+        <button id="likeBtn">❤️ <span id="likeCount">0</span></button>
+    </div>
 
-    images.forEach((img, index) => {
-      img.onclick = () => {
-        currentIndex = index;
-        showImage();
-        viewer.classList.add("show");
-      }
-    });
+    <script>
+        // ГАЛЕРЕЯ
+        const images = Array.from(document.querySelectorAll(".gallery img"));
+        const viewer = document.getElementById("viewer");
+        const bigImg = document.getElementById("bigImg");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const likeBtn = document.getElementById("likeBtn");
+        const likeCountSpan = document.getElementById("likeCount");
+        const descriptionDiv = document.getElementById("description");
 
-    function showImage(){
-      bigImg.style.opacity = 0;
-      setTimeout(() => {
-        bigImg.src = images[currentIndex].src;
-        descriptionDiv.textContent = images[currentIndex].dataset.desc || "";
-        likeCountSpan.textContent = likes[currentIndex];
-        bigImg.style.opacity = 1;
-      }, 150);
-    }
+        let currentIndex = 0;
+        let storedLikes = JSON.parse(localStorage.getItem("likes")) || [];
+        let likes = Array(images.length).fill(0);
+        for(let i = 0; i < storedLikes.length && i < likes.length; i++) likes[i] = storedLikes[i];
 
-    viewer.onclick = (e) => { if(e.target === viewer) viewer.classList.remove("show"); }
-    prevBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex - 1 + images.length) % images.length; showImage(); }
-    nextBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex + 1) % images.length; showImage(); }
-    likeBtn.onclick = (e) => { e.stopPropagation(); likes[currentIndex]++; likeCountSpan.textContent = likes[currentIndex]; localStorage.setItem("likes", JSON.stringify(likes)); }
+        images.forEach((img, index) => {
+            img.onclick = () => {
+                currentIndex = index;
+                showImage();
+                viewer.classList.add("show");
+            }
+        });
 
-    // ЛОГИКА СКИНОВ
-    const skinViewer = document.getElementById("skinViewer");
-    const skinImg = document.getElementById("skinImg");
-    const skinName = document.getElementById("skinName");
+        function showImage(){
+            bigImg.style.opacity = 0;
+            setTimeout(() => {
+                bigImg.src = images[currentIndex].src;
+                descriptionDiv.textContent = images[currentIndex].dataset.desc || "";
+                likeCountSpan.textContent = likes[currentIndex];
+                bigImg.style.opacity = 1;
+            }, 150);
+        }
 
-    document.querySelectorAll(".player-card").forEach(card => {
-      card.onclick = () => {
-        const name = card.textContent.trim();
-        skinName.textContent = name;
-        // Используем API Crafatar для получения 3D тела по нику
-        skinImg.src = `https://crafatar.com/renders/body/${name}?overlay`;
-        skinViewer.style.display = "flex";
-      };
-    });
+        viewer.onclick = (e) => { if(e.target === viewer) viewer.classList.remove("show"); }
+        prevBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex - 1 + images.length) % images.length; showImage(); }
+        nextBtn.onclick = (e) => { e.stopPropagation(); currentIndex = (currentIndex + 1) % images.length; showImage(); }
+        likeBtn.onclick = (e) => { e.stopPropagation(); likes[currentIndex]++; likeCountSpan.textContent = likes[currentIndex]; localStorage.setItem("likes", JSON.stringify(likes)); }
 
-    skinViewer.onclick = () => {
-      skinViewer.style.display = "none";
-    };
-  </script>
+        // СКИНЫ
+        const skinViewer = document.getElementById("skinViewer");
+        const skinImg = document.getElementById("skinImg");
+        const skinName = document.getElementById("skinName");
+
+        document.querySelectorAll(".player-card").forEach(card => {
+            card.addEventListener('click', () => {
+                const name = card.textContent.trim();
+                skinName.textContent = name;
+                // Сначала ставим заглушку, чтобы не висел старый скин пока грузится новый
+                skinImg.src = ""; 
+                skinImg.src = `https://crafatar.com/renders/body/${name}?overlay`;
+                skinViewer.style.display = "flex";
+            });
+        });
+
+        skinViewer.onclick = () => {
+            skinViewer.style.display = "none";
+        };
+    </script>
 </body>
 </html>
