@@ -103,6 +103,54 @@ h1{
   max-width:80%;
   margin-bottom:20px;
 }
+  .players-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 20px;
+}
+
+.player-card {
+  background: #1e293b;
+  padding: 10px 20px;
+  border-radius: 50px; /* Скругленные края для "баблов" */
+  border: 1px solid #334155;
+  font-weight: bold;
+  font-size: 0.9em;
+  color: #38bdf8; /* Голубоватый цвет ника */
+  transition: 0.3s;
+  cursor: default;
+}
+
+.player-card:hover {
+  background: #38bdf8;
+  color: #0f172a;
+  transform: translateY(-3px);
+}
+
+.section-title {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+</style>
+
+<div class="section-title">Участники сервера</div>
+<div class="players-section">
+  <div class="player-card">Dosh1rac</div>
+  <div class="player-card">Meizil</div>
+  <div class="player-card">hirrrrrrrrrrrrrr</div>
+  <div class="player-card">_LumiNebula_</div>
+  <div class="player-card">_Nidalap_</div>
+  <div class="player-card">Vivaotslova</div>
+</div>
+
+<hr style="border: 0; height: 1px; background: #334155; margin: 20px 100px;">
 </style>
 </head>
 
