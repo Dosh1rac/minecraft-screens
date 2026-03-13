@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Screenshot</title>
+    <title>Server Screenshot & Video</title>
 
     <style>
         body {
@@ -20,7 +20,7 @@
         .section-title {
             font-size: 0.9rem;
             color: #64748b;
-            margin-top: 10px;
+            margin-top: 30px;
             text-transform: uppercase;
             letter-spacing: 3px;
         }
@@ -33,7 +33,7 @@
             gap: 10px;
             padding: 20px;
             max-width: 800px;
-            margin: 0 auto 30px auto;
+            margin: 0 auto 10px auto;
         }
 
         .player-tag {
@@ -50,6 +50,31 @@
         .player-tag:hover {
             border-color: #38bdf8;
             background: #1e293b;
+        }
+
+        /* Контейнер для видео */
+        .video-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
 
         /* Галерея */
@@ -140,6 +165,20 @@
         <div class="player-tag">Vivaotslova</div>
     </div>
 
+    <div class="section-title">Видео обзор</div>
+    <div class="video-container">
+        <div class="video-wrapper">
+            <iframe 
+                src="https://www.youtube.com/embed/ORHIEH0q6ZA" 
+                title="YouTube video player" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+
+    <div class="section-title">Галерея скриншотов</div>
     <div class="gallery">
         <img src="2026-01-24_16.13.01.png" data-desc="Закат красивый">
         <img src="2026-01-16_16.01.02.png" data-desc="Нууу...">
