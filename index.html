@@ -153,7 +153,12 @@
 </head>
 <body>
 
-    <h1>📸 Скрины с сервака</h1>
+    <header style="padding: 40px 20px;">
+        <h1>📸 Скрины с сервака</h1>
+        <a href="sborka.zip" download class="btn" style="background: #10b981; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; margin-top: 10px;">
+            📥 Скачать сборку (.zip)
+        </a>
+    </header>
 
     <div class="section-title">Наши игроки</div>
     <div class="players-section">
@@ -165,45 +170,25 @@
         <div class="player-tag">Vivaotslova</div>
     </div>
 
-    <div class="section-title">Видео </div>
-    <div class="video-container">
-        <div class="video-wrapper">
-            <iframe 
-                src="https://www.youtube.com/embed/ORHIEH0q6ZA" 
-                title="YouTube video player" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen>
-            </iframe>
+    <div class="section-title">Галерея контента</div>
+    <div class="gallery" id="mainGallery">
+        <div class="media-item is-video" data-video-src="video1.mp4" data-desc="Трейлер нашего выживания">
+            <img src="preview1.jpg" alt="Video Preview">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; opacity: 0.8;">▶️</div>
         </div>
-    </div>
 
-    <div class="section-title">Галерея скриншотов</div>
-    <div class="gallery">
         <img src="2026-01-24_16.13.01.png" data-desc="Закат красивый">
         <img src="2026-01-16_16.01.02.png" data-desc="Нууу...">
-        <img src="3.png" data-desc="Красиво просто">
-        <img src="4.png" data-desc="Ракушка красивая">
-        <img src="5.png" data-desc="Кораблик">
-        <img src="6.png" data-desc="На ишаках гуляем">
-        <img src="7.png" data-desc="Житель на доме стоит">
-        <img src="8.png" data-desc="Амбарчик">
-        <img src="9.png" data-desc="Соседи">
-        <img src="10.png" data-desc="Повесился🤣">
-        <img src="11.png" data-desc="Торчун">
-        <img src="12.png" data-desc="Барыга">
-        <img src="13.png" data-desc="Голый лешка нюхает что то">
-        <img src="14.png" data-desc="Наутилусы">
-        <img src="15.png" data-desc="Кошмарные ступеньки вместо горы">
-        <img src="16.png" data-desc="Лешка и Сашка гуляют по своей плантиции">
-        <img src="17.png" data-desc="Самая плохая гора в мире💩💩💩💩">
-        <img src="18.png" data-desc="Красива">
-        <img src="19.png" data-desc="игнат">
-    </div>
+        </div>
 
     <div id="viewer">
-        <img id="bigImg">
+        <div id="mediaContainer" style="width: 100%; display: flex; justify-content: center; align-items: center;">
+            <img id="bigImg" style="display: none;">
+            <video id="bigVideo" controls style="display: none; max-width: 90%; max-height: 75%; border-radius: 12px;"></video>
+        </div>
+        
         <div id="description"></div>
+        
         <div class="nav-buttons">
             <button class="btn" id="prevBtn">⬅</button>
             <button class="btn" id="likeBtn">❤️ <span id="likeCount">0</span></button>
@@ -213,56 +198,84 @@
     </div>
 
     <script>
-        const images = Array.from(document.querySelectorAll(".gallery img"));
+        // Собираем все элементы, которые можно открыть
+        const galleryItems = Array.from(document.querySelectorAll(".gallery img, .media-item"));
         const viewer = document.getElementById("viewer");
         const bigImg = document.getElementById("bigImg");
-        const prevBtn = document.getElementById("prevBtn");
-        const nextBtn = document.getElementById("nextBtn");
-        const likeBtn = document.getElementById("likeBtn");
-        const likeCountSpan = document.getElementById("likeCount");
+        const bigVideo = document.getElementById("bigVideo");
         const descriptionDiv = document.getElementById("description");
+        const likeCountSpan = document.getElementById("likeCount");
 
         let currentIndex = 0;
-        let storedLikes = JSON.parse(localStorage.getItem("server_likes")) || [];
-        let likes = Array(images.length).fill(0);
-        for(let i = 0; i < storedLikes.length && i < likes.length; i++) likes[i] = storedLikes[i];
+        let likes = JSON.parse(localStorage.getItem("server_likes")) || Array(galleryItems.length).fill(0);
 
-        images.forEach((img, index) => {
-            img.onclick = () => {
+        galleryItems.forEach((item, index) => {
+            item.onclick = () => {
                 currentIndex = index;
-                showImage();
+                showMedia();
                 viewer.classList.add("show");
             }
         });
 
-        function showImage(){
-            bigImg.src = images[currentIndex].src;
-            descriptionDiv.textContent = images[currentIndex].dataset.desc || "";
-            likeCountSpan.textContent = likes[currentIndex];
+        function showMedia() {
+            const item = galleryItems[currentIndex];
+            const isVideo = item.classList.contains('is-video');
+
+            // Сбрасываем видимость
+            bigImg.style.display = "none";
+            bigVideo.style.display = "none";
+            bigVideo.pause();
+
+            if (isVideo) {
+                bigVideo.src = item.dataset.videoSrc;
+                bigVideo.style.display = "block";
+            } else {
+                bigImg.src = item.src;
+                bigImg.style.display = "block";
+            }
+
+            descriptionDiv.textContent = item.dataset.desc || "";
+            likeCountSpan.textContent = likes[currentIndex] || 0;
         }
 
-        viewer.onclick = (e) => {
-            if(e.target === viewer) viewer.classList.remove("show");
+        // Закрытие и навигация
+        viewer.onclick = (e) => { if(e.target === viewer || e.target.id === "mediaContainer") { viewer.classList.remove("show"); bigVideo.pause(); } }
+        
+        document.getElementById("prevBtn").onclick = (e) => { 
+            e.stopPropagation(); 
+            currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length; 
+            showMedia(); 
+        }
+        
+        document.getElementById("nextBtn").onclick = (e) => { 
+            e.stopPropagation(); 
+            currentIndex = (currentIndex + 1) % galleryItems.length; 
+            showMedia(); 
         }
 
-        prevBtn.onclick = (e) => {
+        document.getElementById("likeBtn").onclick = (e) => {
             e.stopPropagation();
-            currentIndex = (currentIndex - 1 + images.length) % images.length;
-            showImage();
-        }
-
-        nextBtn.onclick = (e) => {
-            e.stopPropagation();
-            currentIndex = (currentIndex + 1) % images.length;
-            showImage();
-        }
-
-        likeBtn.onclick = (e) => {
-            e.stopPropagation();
-            likes[currentIndex]++;
+            likes[currentIndex] = (likes[currentIndex] || 0) + 1;
             likeCountSpan.textContent = likes[currentIndex];
             localStorage.setItem("server_likes", JSON.stringify(likes));
         }
     </script>
+
+    <style>
+        /* Добавим стиль для контейнера видео в галерее */
+        .media-item {
+            position: relative;
+            cursor: pointer;
+            transition: 0.4s;
+        }
+        .media-item img {
+            width: 100%;
+            border-radius: 15px;
+            display: block;
+        }
+        .media-item:hover {
+            transform: scale(1.03);
+        }
+    </style>
 </body>
 </html>
