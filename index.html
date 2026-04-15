@@ -15,15 +15,32 @@
             overflow-x: hidden;
         }
 
-        h1 { padding: 40px 20px; margin: 0; font-size: 2.5rem; }
+        h1 { padding: 40px 20px 10px 20px; margin: 0; font-size: 2.5rem; }
 
         .section-title {
             font-size: 0.9rem;
             color: #64748b;
-            margin-top: 30px;
+            margin-top: 40px;
             text-transform: uppercase;
             letter-spacing: 3px;
         }
+
+        /* Кнопка скачивания */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .download-btn:hover { background: #059669; transform: translateY(-3px); }
 
         /* Список участников */
         .players-section {
@@ -33,7 +50,7 @@
             gap: 10px;
             padding: 20px;
             max-width: 800px;
-            margin: 0 auto 10px auto;
+            margin: 0 auto;
         }
 
         .player-tag {
@@ -46,57 +63,48 @@
             cursor: default;
             transition: 0.2s;
         }
-
-        .player-tag:hover {
-            border-color: #38bdf8;
-            background: #1e293b;
-        }
-
-        /* Контейнер для видео */
-        .video-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 0 20px;
-        }
-
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
-            height: 0;
-            overflow: hidden;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid #334155;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
+        .player-tag:hover { border-color: #38bdf8; }
 
         /* Галерея */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
             padding: 20px 40px 60px 40px;
         }
 
-        .gallery img {
+        .media-item {
+            position: relative;
             width: 100%;
             aspect-ratio: 16/9;
-            object-fit: cover;
-            border-radius: 15px;
             cursor: pointer;
+            border-radius: 15px;
+            overflow: hidden;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #334155;
+            background: #1e293b;
+            display: block;
         }
 
-        .gallery img:hover {
-            transform: scale(1.03);
+        .media-item:hover { transform: scale(1.03); border-color: #38bdf8; }
+
+        .media-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Иконка Play для видео в галерее */
+        .play-icon {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5rem;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+            pointer-events: none;
+            opacity: 0.9;
         }
 
         /* Окно просмотра (Viewer) */
@@ -104,7 +112,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(15, 23, 42, 0.98);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -112,18 +120,27 @@
             z-index: 1000;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: 0.3s;
         }
 
         #viewer.show { opacity: 1; pointer-events: auto; }
 
-        #viewer img {
-            max-width: 90%;
-            max-height: 75%;
-            border-radius: 12px;
+        #viewerContent {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        #viewerContent img, #viewerContent video, #viewerContent iframe {
+            max-width: 90%;
+            max-height: 70vh;
+            border-radius: 12px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
         }
+
+        #description { font-size: 1.2rem; color: #cbd5e1; margin-bottom: 15px; font-weight: 500; }
 
         .nav-buttons { display: flex; gap: 15px; margin-bottom: 15px; }
 
@@ -137,25 +154,17 @@
             font-weight: bold;
             transition: 0.2s;
         }
-
-        .btn:hover { background: #475569; transform: translateY(-2px); }
-        
+        .btn:hover { background: #475569; }
         #likeBtn { background: #ef4444; display: flex; align-items: center; gap: 8px; }
         #likeBtn:hover { background: #dc2626; }
 
-        #description {
-            font-size: 1.1rem;
-            color: #cbd5e1;
-            padding: 10px 20px;
-            max-width: 80%;
-        }
     </style>
 </head>
 <body>
 
-    <header style="padding: 40px 20px;">
+    <header style="padding: 40px 20px 10px 20px;">
         <h1>📸 Скрины с сервака</h1>
-        <a href="sborka.zip" download class="btn" style="background: #10b981; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; margin-top: 10px;">
+        <a href="sborka.zip" download class="download-btn">
             📥 Скачать сборку (.zip)
         </a>
     </header>
@@ -172,11 +181,15 @@
 
     <div class="section-title">Галерея контента</div>
     <div class="gallery" id="mainGallery">
-<div class="media-item" data-youtube="ORHIEH0q6ZA" data-desc="Наш трейлер на YouTube">
-        <img src="https://img.youtube.com/vi/ORHIEH0q6ZA/maxresdefault.jpg" alt="YouTube Preview">
-        <div class="play-icon">▶️</div>
-    </div>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; opacity: 0.8;">▶️</div>
+
+        <div class="media-item" data-youtube="ORHIEH0q6ZA" data-desc="Наш трейлер на YouTube">
+            <img src="https://img.youtube.com/vi/ORHIEH0q6ZA/maxresdefault.jpg" alt="YouTube Preview">
+            <div class="play-icon">▶️</div>
+        </div>
+
+        <div class="media-item" data-video="video.mp4" data-desc="Какое-то крутое видео с сервера">
+            <img src="preview.jpg" alt="Local Video Preview">
+            <div class="play-icon">▶️</div>
         </div>
 
         <img src="2026-01-24_16.13.01.png" class="media-item" data-desc="Закат красивый">
@@ -198,13 +211,11 @@
         <img src="17.png" class="media-item" data-desc="Самая плохая гора в мире💩💩💩💩">
         <img src="18.png" class="media-item" data-desc="Красива">
         <img src="19.png" class="media-item" data-desc="игнат">
-        </div>
+
+    </div>
 
     <div id="viewer">
-        <div id="mediaContainer" style="width: 100%; display: flex; justify-content: center; align-items: center;">
-            <img id="bigImg" style="display: none;">
-            <video id="bigVideo" controls style="display: none; max-width: 90%; max-height: 75%; border-radius: 12px;"></video>
-        </div>
+        <div id="viewerContent"></div>
         
         <div id="description"></div>
         
@@ -217,84 +228,76 @@
     </div>
 
     <script>
-        // Собираем все элементы, которые можно открыть
-        const galleryItems = Array.from(document.querySelectorAll(".gallery img, .media-item"));
+        const galleryItems = Array.from(document.querySelectorAll(".media-item"));
         const viewer = document.getElementById("viewer");
-        const bigImg = document.getElementById("bigImg");
-        const bigVideo = document.getElementById("bigVideo");
+        const viewerContent = document.getElementById("viewerContent");
         const descriptionDiv = document.getElementById("description");
         const likeCountSpan = document.getElementById("likeCount");
 
         let currentIndex = 0;
         let likes = JSON.parse(localStorage.getItem("server_likes")) || Array(galleryItems.length).fill(0);
 
+        function renderMedia() {
+            const item = galleryItems[currentIndex];
+            const youtubeId = item.getAttribute("data-youtube");
+            const videoSrc = item.getAttribute("data-video");
+            const desc = item.getAttribute("data-desc");
+
+            viewerContent.innerHTML = ""; // Очищаем контейнер
+
+            if (youtubeId) {
+                // Если это YouTube
+                viewerContent.innerHTML = `<iframe style="aspect-ratio: 16/9; width: 90%; max-width: 1000px;" src="https://www.youtube.com/embed/${youtubeId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            } else if (videoSrc) {
+                // Если это локальное видео mp4
+                viewerContent.innerHTML = `<video src="${videoSrc}" controls autoplay style="max-width: 90%; max-height: 70vh; border-radius: 12px; outline: none;"></video>`;
+            } else {
+                // Если это картинка
+                viewerContent.innerHTML = `<img src="${item.src}" style="max-width: 90%; max-height: 70vh; border-radius: 12px;">`;
+            }
+
+            descriptionDiv.textContent = desc || "";
+            likeCountSpan.textContent = likes[currentIndex] || 0;
+        }
+
         galleryItems.forEach((item, index) => {
-            item.onclick = () => {
+            item.onclick = (e) => {
+                e.stopPropagation();
                 currentIndex = index;
-                showMedia();
+                renderMedia();
                 viewer.classList.add("show");
             }
         });
 
-        function showMedia() {
-            const item = galleryItems[currentIndex];
-            const isVideo = item.classList.contains('is-video');
-
-            // Сбрасываем видимость
-            bigImg.style.display = "none";
-            bigVideo.style.display = "none";
-            bigVideo.pause();
-
-            if (isVideo) {
-                bigVideo.src = item.dataset.videoSrc;
-                bigVideo.style.display = "block";
-            } else {
-                bigImg.src = item.src;
-                bigImg.style.display = "block";
-            }
-
-            descriptionDiv.textContent = item.dataset.desc || "";
-            likeCountSpan.textContent = likes[currentIndex] || 0;
+        // Закрытие просмотрщика
+        viewer.onclick = (e) => { 
+            if(e.target === viewer || e.target.id === "viewerContent") { 
+                viewer.classList.remove("show"); 
+                viewerContent.innerHTML = ""; // Останавливаем видео при закрытии
+            } 
         }
-
-        // Закрытие и навигация
-        viewer.onclick = (e) => { if(e.target === viewer || e.target.id === "mediaContainer") { viewer.classList.remove("show"); bigVideo.pause(); } }
         
+        // Листать влево
         document.getElementById("prevBtn").onclick = (e) => { 
             e.stopPropagation(); 
             currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length; 
-            showMedia(); 
+            renderMedia(); 
         }
         
+        // Листать вправо
         document.getElementById("nextBtn").onclick = (e) => { 
             e.stopPropagation(); 
             currentIndex = (currentIndex + 1) % galleryItems.length; 
-            showMedia(); 
+            renderMedia(); 
         }
 
+        // Лайки
         document.getElementById("likeBtn").onclick = (e) => {
             e.stopPropagation();
-            likes[currentIndex] = (likes[currentIndex] || 0) + 1;
+            likes[currentIndex]++;
             likeCountSpan.textContent = likes[currentIndex];
             localStorage.setItem("server_likes", JSON.stringify(likes));
         }
     </script>
-
-    <style>
-        /* Добавим стиль для контейнера видео в галерее */
-        .media-item {
-            position: relative;
-            cursor: pointer;
-            transition: 0.4s;
-        }
-        .media-item img {
-            width: 100%;
-            border-radius: 15px;
-            display: block;
-        }
-        .media-item:hover {
-            transform: scale(1.03);
-        }
-    </style>
 </body>
 </html>
